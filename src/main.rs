@@ -1,56 +1,50 @@
-use druid::widget::{Align, Flex, Label};
-use druid::{AppLauncher, Data, Env, Lens, LocalizedString, Widget, WindowDesc};
-use std::thread::sleep;
-use std::time::Duration;
+use iced::{slider, Column, Element, ProgressBar, Sandbox, Settings, Slider};
 
-const WINDOW_TITLE: LocalizedString<TimerState> = LocalizedString::new("Pomodoro");
-
-#[derive(Clone, Data, Lens)]
-struct TimerState {
-    timer: i32,
-    work_limit: i32,
-    rest_limit: i32,
-    work: bool,
+pub fn main() -> iced::Result {
+    Progress::run(Settings::default())
 }
 
-fn main() {
-    // describe the main window
-    let main_window = WindowDesc::new(build_root_widget)
-        .title(WINDOW_TITLE)
-        .window_size((400.0, 400.0));
-
-    // create the initial app state
-    let mut initial_state = TimerState {
-        timer: 267,
-        work_limit: 25 * 60,
-        rest_limit: 5 * 60,
-        work: true,
-    };
-
-    // start the application
-    AppLauncher::with_window(main_window)
-        .launch(initial_state)
-        .expect("Failed to launch application");
-
-    sleep(Duration::new(2, 0));
-    initial_state.timer = 388;
+#[derive(Default)]
+struct Progress {
+    value: f32,
+    progress_bar_slider: slider::State,
 }
 
-fn build_root_widget() -> impl Widget<TimerState> {
-    // a label that will determine its text based on the current app data.
-    let label = Label::new(|data: &TimerState, _env: &Env| {
-        format!("Hello {}!", number_to_time(data.timer))
-    });
-
-    // arrange the two widgets vertically, with some padding
-    let layout = Flex::column().with_child(label);
-
-    // center the two widgets in the available space
-    Align::centered(layout)
+#[derive(Debug, Clone, Copy)]
+enum Message {
+    SliderChanged(f32),
 }
 
-fn number_to_time(number: i32) -> String {
-    let minutes = number / 60;
-    let seconds = number % 60;
-    format!("{}:{}", minutes, seconds)
+impl Sandbox for Progress {
+    type Message = Message;
+
+    fn new() -> Self {
+        Self::default()
+    }
+
+    fn title(&self) -> String {
+        String::from("A simple Progressbar")
+    }
+
+    fn update(&mut self, message: Message) {
+        match message {
+            Message::SliderChanged(x) => self.value = x,
+        }
+    }
+
+    fn view(&mut self) -> Element<Message> {
+        Column::new()
+            .padding(20)
+            .push(ProgressBar::new(0.0..=100.0, self.value))
+            .push(
+                Slider::new(
+                    &mut self.progress_bar_slider,
+                    0.0..=100.0,
+                    self.value,
+                    Message::SliderChanged,
+                )
+                .step(0.01),
+            )
+            .into()
+    }
 }
