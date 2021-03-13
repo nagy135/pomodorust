@@ -1,11 +1,17 @@
 use iced::{
     canvas::{self, Cache, Canvas, Cursor, Geometry, LineCap, Path, Stroke},
-    executor, time, Application, Color, Command, Container, Element, Length, Point, Rectangle,
-    Settings, Subscription, Vector,
+    executor, time,
+    window::Settings as WindowSettings,
+    Application, Color, Command, Container, Element, Length, Point, Rectangle, Settings,
+    Subscription, Vector,
 };
 
 pub fn main() -> iced::Result {
     Clock::run(Settings {
+        window: WindowSettings {
+            size: (400, 400),
+            ..WindowSettings::default()
+        },
         antialiasing: true,
         ..Settings::default()
     })
