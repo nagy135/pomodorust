@@ -1,6 +1,8 @@
+use chrono::Timelike;
 use iced::{
     canvas::{self, Cache, Canvas, Cursor, Geometry, LineCap, Path, Stroke},
     executor, time,
+    widget::Text,
     window::Settings as WindowSettings,
     Application, Color, Column, Command, Container, Element, Length, Point, Rectangle, Settings,
     Subscription, Vector,
@@ -18,6 +20,11 @@ pub fn main() -> iced::Result {
 }
 
 struct Clock {
+    count: i32,
+    total_work: i32,
+    total_rest: i32,
+    work: bool,
+    start: chrono::DateTime<chrono::Local>,
     now: chrono::DateTime<chrono::Local>,
     clock: Cache,
 }
@@ -35,6 +42,11 @@ impl Application for Clock {
     fn new(_flags: ()) -> (Self, Command<Message>) {
         (
             Clock {
+                count: 0,
+                total_work: 15 * 60,
+                total_rest: 5 * 60,
+                work: true,
+                start: chrono::Local::now(),
                 now: chrono::Local::now(),
                 clock: Default::default(),
             },
@@ -43,7 +55,6 @@ impl Application for Clock {
     }
 
     fn title(&self) -> String {
-        String::from("Clock - Iced")
         String::from("Pomodoro")
     }
 
@@ -68,6 +79,10 @@ impl Application for Clock {
     }
 
     fn view(&mut self) -> Element<Message> {
+        let current = format!("{}:{}", self.now.minute(), self.now.minute());
+        let total = "15:00";
+        let timer = Text::new(format!("{}/{}", current, total)).size(50);
+
         let canvas = Container::new(
             Canvas::new(self)
                 .width(Length::Units(400))
@@ -79,14 +94,12 @@ impl Application for Clock {
         .center_x()
         .center_y();
 
-        Column::new().padding(20).push(canvas).into()
+        Column::new().padding(20).push(canvas).push(timer).into()
     }
 }
 
 impl canvas::Program<Message> for Clock {
     fn draw(&self, bounds: Rectangle, _cursor: Cursor) -> Vec<Geometry> {
-        use chrono::Timelike;
-
         let clock = self.clock.draw(bounds.size(), |frame| {
             let center = frame.center();
             let radius = frame.width().min(frame.height()) / 2.0;
