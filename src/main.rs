@@ -4,14 +4,14 @@ use iced::{
     executor, time,
     widget::Text,
     window::Settings as WindowSettings,
-    Application, Color, Column, Command, Container, Element, Length, Point, Rectangle, Settings,
-    Subscription, Vector,
+    Align, Application, Color, Column, Command, Container, Element, Length, Point, Rectangle,
+    Settings, Subscription, Vector,
 };
 
 pub fn main() -> iced::Result {
     Clock::run(Settings {
         window: WindowSettings {
-            size: (400, 400),
+            size: (400, 200),
             ..WindowSettings::default()
         },
         antialiasing: true,
@@ -24,8 +24,8 @@ struct Clock {
     total_work: i32,
     total_rest: i32,
     work: bool,
-    start: chrono::DateTime<chrono::Local>,
     now: chrono::DateTime<chrono::Local>,
+    previous: u32,
     clock: Cache,
 }
 
@@ -46,8 +46,8 @@ impl Application for Clock {
                 total_work: 15 * 60,
                 total_rest: 5 * 60,
                 work: true,
-                start: chrono::Local::now(),
                 now: chrono::Local::now(),
+                previous: chrono::Local::now().minute(),
                 clock: Default::default(),
             },
             Command::none(),
@@ -67,6 +67,11 @@ impl Application for Clock {
                     self.now = now;
                     self.clock.clear();
                 }
+                let second = self.now.second();
+                if self.previous != second {
+                    self.previous = second;
+                    self.count += 1;
+                }
             }
         }
 
@@ -79,19 +84,25 @@ impl Application for Clock {
     }
 
     fn view(&mut self) -> Element<Message> {
-        let current = format!("{}:{}", self.now.minute(), self.now.minute());
-        let total = "15:00";
+        let minutes: i32 = self.count / 60;
+        let seconds: i32 = self.count - 60 * minutes;
+
+        let current = format!("{}:{}", minutes, seconds);
+        let total = match self.work {
+            true => "15:00",
+            false => "5:00",
+        };
         let timer = Text::new(format!("{}/{}", current, total)).size(50);
 
         let canvas = Container::new(
             Canvas::new(self)
-                .width(Length::Units(400))
-                .height(Length::Units(400)),
+                .width(Length::Units(100))
+                .height(Length::Units(100)),
         )
         .width(Length::Fill)
         .height(Length::Fill)
-        .padding(20)
-        .center_x()
+        .padding(5)
+        .align_x(Align::End)
         .center_y();
 
         Column::new().padding(20).push(canvas).push(timer).into()
@@ -105,7 +116,7 @@ impl canvas::Program<Message> for Clock {
             let radius = frame.width().min(frame.height()) / 2.0;
 
             let background = Path::circle(center, radius);
-            frame.fill(&background, Color::from_rgb8(0x12, 0x93, 0xD8));
+            frame.fill(&background, Color::from_rgb8(0xc2, 0x23, 0x30));
 
             let short_hand = Path::line(Point::ORIGIN, Point::new(0.0, -0.5 * radius));
 
