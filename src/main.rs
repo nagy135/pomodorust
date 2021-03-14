@@ -2,7 +2,7 @@ use iced::{
     canvas::{self, Cache, Canvas, Cursor, Geometry, LineCap, Path, Stroke},
     executor, time,
     window::Settings as WindowSettings,
-    Application, Color, Command, Container, Element, Length, Point, Rectangle, Settings,
+    Application, Color, Column, Command, Container, Element, Length, Point, Rectangle, Settings,
     Subscription, Vector,
 };
 
@@ -67,17 +67,18 @@ impl Application for Clock {
     }
 
     fn view(&mut self) -> Element<Message> {
-        let canvas = Canvas::new(self)
-            .width(Length::Units(400))
-            .height(Length::Units(400));
+        let canvas = Container::new(
+            Canvas::new(self)
+                .width(Length::Units(400))
+                .height(Length::Units(400)),
+        )
+        .width(Length::Fill)
+        .height(Length::Fill)
+        .padding(20)
+        .center_x()
+        .center_y();
 
-        Container::new(canvas)
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .padding(20)
-            .center_x()
-            .center_y()
-            .into()
+        Column::new().padding(20).push(canvas).into()
     }
 }
 
