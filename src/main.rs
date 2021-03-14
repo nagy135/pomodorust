@@ -87,7 +87,7 @@ impl Application for Clock {
         let minutes: i32 = self.count / 60;
         let seconds: i32 = self.count - 60 * minutes;
 
-        let current = format!("{}:{}", minutes, seconds);
+        let current = format!("{:0>#2}:{:0>#2}", minutes, seconds);
         let total = match self.work {
             true => "15:00",
             false => "5:00",
