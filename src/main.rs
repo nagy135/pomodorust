@@ -44,6 +44,7 @@ impl Application for Clock {
 
     fn title(&self) -> String {
         String::from("Clock - Iced")
+        String::from("Pomodoro")
     }
 
     fn update(&mut self, message: Message) -> Command<Message> {
