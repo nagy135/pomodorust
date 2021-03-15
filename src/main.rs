@@ -11,6 +11,8 @@ use iced::{
     Align, Application, Color, Column, Command, Container, Element, Length, Point, Rectangle, Row,
     Settings, Space, Subscription, Vector,
 };
+use iced_native::event::Event;
+use iced_native::keyboard::Event as KeyboardEvent;
 
 const WORK_LENGTH: u32 = 15;
 const REST_LENGTH: u32 = 5;
@@ -33,6 +35,7 @@ struct Clock {
     work_sessions: u32,
     work: bool,
     now: chrono::DateTime<chrono::Local>,
+    paused: bool,
     previous: u32,
     clock: Cache,
 }
@@ -57,6 +60,7 @@ impl Application for Clock {
                 work_sessions: 0,
                 work: true,
                 now: chrono::Local::now(),
+                paused: false,
                 previous: chrono::Local::now().minute(),
                 clock: Default::default(),
             },
@@ -79,7 +83,7 @@ impl Application for Clock {
                 }
 
                 let second = self.now.second();
-                if self.previous != second {
+                if self.previous != second && !self.paused {
                     self.previous = second;
                     self.count += 1;
 
@@ -98,7 +102,16 @@ impl Application for Clock {
                     }
                 }
             }
-            Message::EventOccured(event) => println!("{:?}", event),
+            Message::EventOccured(event) => {
+                if let Event::Keyboard(keyboard_event) = event {
+                    if let KeyboardEvent::CharacterReceived(ch) = keyboard_event {
+                        if let ' ' = ch {
+                            self.paused = !self.paused;
+                        }
+                    }
+                } else {
+                }
+            }
         }
 
         Command::none()
@@ -123,11 +136,14 @@ impl Application for Clock {
         };
         let timer = Text::new(format!("{}/{}", current, total)).size(40);
 
-        let state = Text::new(match self.work {
-            true => format!("work"),
-            false => format!("rest"),
-        })
-        .size(40);
+        let state_text = match self.paused {
+            false => match self.work {
+                true => format!("work"),
+                false => format!("rest"),
+            },
+            true => format!("STOP"),
+        };
+        let state = Text::new(state_text).size(40);
 
         let work_sessions = Text::new(self.work_sessions.to_string()).size(30);
 
@@ -164,9 +180,12 @@ impl canvas::Program<Message> for Clock {
 
             let background = Path::circle(center, radius);
 
-            let color: Color = match self.work {
-                true => Color::from_rgb8(0xc2, 0x23, 0x30),
-                false => Color::from_rgb8(0x19, 0xa8, 0x5b),
+            let color: Color = match self.paused {
+                false => match self.work {
+                    true => Color::from_rgb8(0xc2, 0x23, 0x30),
+                    false => Color::from_rgb8(0x19, 0xa8, 0x5b),
+                },
+                true => Color::from_rgb8(0x77, 0x77, 0x77),
             };
             frame.fill(&background, color);
 
