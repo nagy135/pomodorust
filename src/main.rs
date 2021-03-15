@@ -12,8 +12,8 @@ use iced::{
     Settings, Space, Subscription, Vector,
 };
 
-const WORK_LENGTH: i32 = 1;
-const REST_LENGTH: i32 = 1;
+const WORK_LENGTH: u32 = 1;
+const REST_LENGTH: u32 = 1;
 
 pub fn main() -> iced::Result {
     Clock::run(Settings {
@@ -27,10 +27,10 @@ pub fn main() -> iced::Result {
 }
 
 struct Clock {
-    count: i32,
-    total_work: i32,
-    total_rest: i32,
-    work_sessions: i32,
+    count: u32,
+    total_work: u32,
+    total_rest: u32,
+    work_sessions: u32,
     work: bool,
     now: chrono::DateTime<chrono::Local>,
     previous: u32,
@@ -108,8 +108,8 @@ impl Application for Clock {
     }
 
     fn view(&mut self) -> Element<Message> {
-        let minutes: i32 = self.count / 60;
-        let seconds: i32 = self.count - 60 * minutes;
+        let minutes: u32 = self.count / 60;
+        let seconds: u32 = self.count - 60 * minutes;
 
         let current = format!("{:0>#2}:{:0>#2}", minutes, seconds);
         let total = match self.work {
