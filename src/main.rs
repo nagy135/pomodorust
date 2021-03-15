@@ -1,4 +1,8 @@
 use chrono::Timelike;
+
+use play;
+use std::thread;
+
 use iced::{
     canvas::{self, Cache, Canvas, Cursor, Geometry, LineCap, Path, Stroke},
     executor, time,
@@ -8,8 +12,8 @@ use iced::{
     Settings, Space, Subscription, Vector,
 };
 
-const WORK_LENGTH: i32 = 15;
-const REST_LENGTH: i32 = 5;
+const WORK_LENGTH: i32 = 1;
+const REST_LENGTH: i32 = 1;
 
 pub fn main() -> iced::Result {
     Clock::run(Settings {
@@ -78,17 +82,18 @@ impl Application for Clock {
                     self.previous = second;
                     self.count += 10;
 
-                    if let true = self.work {
-                        if self.count >= self.total_work {
-                            self.work = false;
+                    if self.count
+                        >= match self.work {
+                            true => self.total_work,
+                            false => self.total_rest,
+                        }
+                    {
+                        self.work = !self.work;
+                        self.count = 0;
+                        play_sound();
+                        if let true = self.work {
                             self.work_sessions += 1;
-                            self.count = 0;
-                        };
-                    } else {
-                        if self.count >= self.total_rest {
-                            self.work = true;
-                            self.count = 0;
-                        };
+                        }
                     }
                 }
             }
@@ -201,4 +206,10 @@ fn hand_rotation(n: u32, total: u32) -> f32 {
     let turns = n as f32 / total as f32;
 
     2.0 * std::f32::consts::PI * turns
+}
+
+fn play_sound() {
+    thread::spawn(|| {
+        play::play("assets/pomodoro.mp3").unwrap();
+    });
 }

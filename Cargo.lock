@@ -1438,6 +1438,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "mpg123-sys"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a75c26239d85c1423091c109fcdabbcfaac868576dc018b0e959137217907610"
+dependencies = [
+ "bitflags",
+ "libc",
+ "pkg-config",
+]
+
+[[package]]
 name = "naga"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1647,6 +1658,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "out123-sys"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5da977be7c4b44e2ad26be779aafc1761a89bd2ee6e363770bb71eb67a00d2e5"
+dependencies = [
+ "libc",
+ "mpg123-sys",
+ "pkg-config",
+]
+
+[[package]]
 name = "owned_ttf_parser"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1733,11 +1755,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3831453b3449ceb48b6d9c7ad7c96d5ea673e9b470a1dc578c2ce6521230884c"
 
 [[package]]
+name = "play"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c570085654588139e9ea2f452fe7dcb78d576da4f1c04d58b98b32fc42744ff0"
+dependencies = [
+ "libc",
+ "mpg123-sys",
+ "out123-sys",
+]
+
+[[package]]
 name = "pomodorust"
 version = "0.1.0"
 dependencies = [
  "chrono",
  "iced",
+ "play",
 ]
 
 [[package]]
