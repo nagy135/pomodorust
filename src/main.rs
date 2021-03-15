@@ -107,6 +107,7 @@ impl Application for Clock {
                     if let KeyboardEvent::CharacterReceived(ch) = keyboard_event {
                         if let ' ' = ch {
                             self.paused = !self.paused;
+                            self.clock.clear();
                         }
                     }
                 }
