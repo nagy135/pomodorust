@@ -109,7 +109,6 @@ impl Application for Clock {
                             self.paused = !self.paused;
                         }
                     }
-                } else {
                 }
             }
         }
