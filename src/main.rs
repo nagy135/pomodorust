@@ -4,8 +4,8 @@ use iced::{
     executor, time,
     widget::Text,
     window::Settings as WindowSettings,
-    Align, Application, Color, Column, Command, Container, Element, Length, Point, Rectangle,
-    Settings, Subscription, Vector,
+    Align, Application, Color, Column, Command, Container, Element, Length, Point, Rectangle, Row,
+    Settings, Space, Subscription, Vector,
 };
 
 const WORK_LENGTH: i32 = 15;
@@ -26,6 +26,7 @@ struct Clock {
     count: i32,
     total_work: i32,
     total_rest: i32,
+    work_sessions: i32,
     work: bool,
     now: chrono::DateTime<chrono::Local>,
     previous: u32,
@@ -48,6 +49,7 @@ impl Application for Clock {
                 count: 0,
                 total_work: WORK_LENGTH * 60,
                 total_rest: REST_LENGTH * 60,
+                work_sessions: 0,
                 work: true,
                 now: chrono::Local::now(),
                 previous: chrono::Local::now().minute(),
@@ -74,10 +76,12 @@ impl Application for Clock {
                 let second = self.now.second();
                 if self.previous != second {
                     self.previous = second;
-                    self.count += 1;
+                    self.count += 10;
+
                     if let true = self.work {
                         if self.count >= self.total_work {
                             self.work = false;
+                            self.work_sessions += 1;
                             self.count = 0;
                         };
                     } else {
@@ -107,7 +111,15 @@ impl Application for Clock {
             true => format!("{:0>#2}:00", WORK_LENGTH),
             false => format!("{:0>#2}:00", REST_LENGTH),
         };
-        let timer = Text::new(format!("{}/{}", current, total)).size(50);
+        let timer = Text::new(format!("{}/{}", current, total)).size(40);
+
+        let state = Text::new(match self.work {
+            true => format!("work"),
+            false => format!("rest"),
+        })
+        .size(40);
+
+        let work_sessions = Text::new(self.work_sessions.to_string()).size(30);
 
         let canvas = Container::new(
             Canvas::new(self)
@@ -120,7 +132,17 @@ impl Application for Clock {
         .align_x(Align::End)
         .center_y();
 
-        Column::new().padding(20).push(canvas).push(timer).into()
+        let row = Row::new()
+            .push(timer)
+            .push(Space::new(Length::Units(50), Length::Shrink))
+            .push(state)
+            .width(Length::Fill);
+        Column::new()
+            .padding(20)
+            .push(canvas)
+            .push(work_sessions)
+            .push(row)
+            .into()
     }
 }
 
@@ -131,10 +153,14 @@ impl canvas::Program<Message> for Clock {
             let radius = frame.width().min(frame.height()) / 2.0;
 
             let background = Path::circle(center, radius);
-            frame.fill(&background, Color::from_rgb8(0xc2, 0x23, 0x30));
+
+            let color: Color = match self.work {
+                true => Color::from_rgb8(0xc2, 0x23, 0x30),
+                false => Color::from_rgb8(0x19, 0xa8, 0x5b),
+            };
+            frame.fill(&background, color);
 
             let short_hand = Path::line(Point::ORIGIN, Point::new(0.0, -0.5 * radius));
-
             let long_hand = Path::line(Point::ORIGIN, Point::new(0.0, -0.8 * radius));
 
             let thin_stroke = Stroke {
