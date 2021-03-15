@@ -13,3 +13,6 @@ play = "0.5.3"
 [dependencies.iced]
 version = "0.2.0"
 features = ["canvas", "tokio", "debug"]
+
+[dependencies.iced_native]
+version = "0.3.0"

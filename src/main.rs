@@ -37,9 +37,10 @@ struct Clock {
     clock: Cache,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 enum Message {
     Tick(chrono::DateTime<chrono::Local>),
+    EventOccured(iced_native::Event),
 }
 
 impl Application for Clock {
@@ -97,14 +98,18 @@ impl Application for Clock {
                     }
                 }
             }
+            Message::EventOccured(event) => println!("{:?}", event),
         }
 
         Command::none()
     }
 
     fn subscription(&self) -> Subscription<Message> {
-        time::every(std::time::Duration::from_millis(500))
-            .map(|_| Message::Tick(chrono::Local::now()))
+        Subscription::batch(vec![
+            iced_native::subscription::events().map(Message::EventOccured),
+            time::every(std::time::Duration::from_millis(500))
+                .map(|_| Message::Tick(chrono::Local::now())),
+        ])
     }
 
     fn view(&mut self) -> Element<Message> {
