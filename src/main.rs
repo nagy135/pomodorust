@@ -12,8 +12,8 @@ use iced::{
     Settings, Space, Subscription, Vector,
 };
 
-const WORK_LENGTH: u32 = 1;
-const REST_LENGTH: u32 = 1;
+const WORK_LENGTH: u32 = 15;
+const REST_LENGTH: u32 = 5;
 
 pub fn main() -> iced::Result {
     Clock::run(Settings {
@@ -80,7 +80,7 @@ impl Application for Clock {
                 let second = self.now.second();
                 if self.previous != second {
                     self.previous = second;
-                    self.count += 10;
+                    self.count += 1;
 
                     if self.count
                         >= match self.work {
