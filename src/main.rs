@@ -8,6 +8,9 @@ use iced::{
     Settings, Subscription, Vector,
 };
 
+const WORK_LENGTH: i32 = 15;
+const REST_LENGTH: i32 = 5;
+
 pub fn main() -> iced::Result {
     Clock::run(Settings {
         window: WindowSettings {
@@ -43,8 +46,8 @@ impl Application for Clock {
         (
             Clock {
                 count: 0,
-                total_work: 15 * 60,
-                total_rest: 5 * 60,
+                total_work: WORK_LENGTH * 60,
+                total_rest: REST_LENGTH * 60,
                 work: true,
                 now: chrono::Local::now(),
                 previous: chrono::Local::now().minute(),
@@ -67,10 +70,22 @@ impl Application for Clock {
                     self.now = now;
                     self.clock.clear();
                 }
+
                 let second = self.now.second();
                 if self.previous != second {
                     self.previous = second;
                     self.count += 1;
+                    if let true = self.work {
+                        if self.count >= self.total_work {
+                            self.work = false;
+                            self.count = 0;
+                        };
+                    } else {
+                        if self.count >= self.total_rest {
+                            self.work = true;
+                            self.count = 0;
+                        };
+                    }
                 }
             }
         }
@@ -89,8 +104,8 @@ impl Application for Clock {
 
         let current = format!("{:0>#2}:{:0>#2}", minutes, seconds);
         let total = match self.work {
-            true => "15:00",
-            false => "5:00",
+            true => format!("{:0>#2}:00", WORK_LENGTH),
+            false => format!("{:0>#2}:00", REST_LENGTH),
         };
         let timer = Text::new(format!("{}/{}", current, total)).size(50);
 
