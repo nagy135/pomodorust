@@ -105,9 +105,23 @@ impl Application for Clock {
             Message::EventOccured(event) => {
                 if let Event::Keyboard(keyboard_event) = event {
                     if let KeyboardEvent::CharacterReceived(ch) = keyboard_event {
-                        if let ' ' = ch {
-                            self.paused = !self.paused;
-                            self.clock.clear();
+                        match ch {
+                            ' ' => {
+                                self.paused = !self.paused;
+                                self.clock.clear();
+                            }
+                            'r' => {
+                                self.count = 0;
+                                self.work = true;
+                                self.work_sessions = 0;
+                                self.clock.clear();
+                            }
+                            'n' => {
+                                self.count = 0;
+                                self.work = !self.work;
+                                self.clock.clear();
+                            }
+                            _ => {}
                         }
                     }
                 }
