@@ -17,6 +17,8 @@ use iced_native::keyboard::Event as KeyboardEvent;
 const WORK_LENGTH: u32 = 15;
 const REST_LENGTH: u32 = 5;
 
+const DATA_FOLDER: &str = "/usr/share/pomodorust";
+
 pub fn main() -> iced::Result {
     Clock::run(Settings {
         window: WindowSettings {
@@ -248,6 +250,6 @@ fn hand_rotation(n: u32, total: u32) -> f32 {
 
 fn play_sound() {
     thread::spawn(|| {
-        play::play("assets/pomodoro.mp3").unwrap();
+        play::play(format!("{}/{}", DATA_FOLDER, "/assets/pomodoro.mp3")).unwrap();
     });
 }
