@@ -3,6 +3,8 @@ use chrono::Timelike;
 use play;
 use std::thread;
 
+use std::process;
+
 use iced::{
     canvas::{self, Cache, Canvas, Cursor, Geometry, LineCap, Path, Stroke},
     executor, time,
@@ -111,6 +113,9 @@ impl Application for Clock {
                             ' ' => {
                                 self.paused = !self.paused;
                                 self.clock.clear();
+                            }
+                            'q' => {
+                                process::exit(0);
                             }
                             'r' => {
                                 self.count = 0;
