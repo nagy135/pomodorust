@@ -101,6 +101,7 @@ impl Application for Clock {
                         self.count = 0;
                         play_sound();
                         if let true = self.work {
+                            self.paused = true;
                             self.work_sessions += 1;
                         }
                     }
