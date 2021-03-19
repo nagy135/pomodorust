@@ -16,7 +16,7 @@ use iced::{
 use iced_native::event::Event;
 use iced_native::keyboard::Event as KeyboardEvent;
 
-const WORK_LENGTH: u32 = 15;
+const WORK_LENGTH: u32 = 25;
 const REST_LENGTH: u32 = 5;
 
 const DATA_FOLDER: &str = "/usr/share/pomodorust";
