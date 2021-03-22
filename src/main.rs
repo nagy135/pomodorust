@@ -129,6 +129,14 @@ impl Application for Clock {
                                 self.work = !self.work;
                                 self.clock.clear();
                             }
+                            'h' => {
+                                self.count -= 60;
+                                self.clock.clear();
+                            }
+                            'l' => {
+                                self.count += 60;
+                                self.clock.clear();
+                            }
                             _ => {}
                         }
                     }
