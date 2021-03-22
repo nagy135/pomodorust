@@ -110,10 +110,10 @@ impl Application for Clock {
             Message::EventOccured(event) => {
                 if let Event::Keyboard(keyboard_event) = event {
                     if let KeyboardEvent::CharacterReceived(ch) = keyboard_event {
+                        let mut change = self.count as i32;
                         match ch {
                             ' ' => {
                                 self.paused = !self.paused;
-                                self.clock.clear();
                             }
                             'q' => {
                                 process::exit(0);
@@ -122,31 +122,31 @@ impl Application for Clock {
                                 self.count = 0;
                                 self.work = true;
                                 self.work_sessions = 0;
-                                self.clock.clear();
                             }
                             'n' => {
                                 self.count = 0;
                                 self.work = !self.work;
-                                self.clock.clear();
                             }
                             'h' => {
-                                self.count -= 60;
-                                self.clock.clear();
+                                change = self.count as i32 - 60;
                             }
                             'l' => {
-                                self.count += 60;
-                                self.clock.clear();
+                                change = self.count as i32 + 60;
                             }
                             'j' => {
-                                self.count -= 10;
-                                self.clock.clear();
+                                change = self.count as i32 - 10;
                             }
                             'k' => {
-                                self.count += 10;
-                                self.clock.clear();
+                                change = self.count as i32 + 10;
                             }
                             _ => {}
                         }
+                        if change < 0 {
+                            self.count = 0;
+                        } else {
+                            self.count = change as u32;
+                        }
+                        self.clock.clear();
                     }
                 }
             }
