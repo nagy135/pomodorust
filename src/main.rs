@@ -137,6 +137,14 @@ impl Application for Clock {
                                 self.count += 60;
                                 self.clock.clear();
                             }
+                            'j' => {
+                                self.count -= 10;
+                                self.clock.clear();
+                            }
+                            'k' => {
+                                self.count += 10;
+                                self.clock.clear();
+                            }
                             _ => {}
                         }
                     }
